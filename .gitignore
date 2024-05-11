@@ -10,16 +10,13 @@
 /dist
 /frontend/dist
 /backend/dist
-
-# Environment variables
 /frontend/.env
 /backend/.env
 
-# Log files
+
 *.log
 
-# macOS
-.DS_Store
 
-# Windows
+
+
 Thumbs.db

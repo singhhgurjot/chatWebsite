@@ -1,7 +1,12 @@
-const express=require('express');
-const router=express.Router();
-const { User } = require("../models/User");
-router.post("/login", (req, res) => {
- const { email, password } = req.body;
-
-});
+const express = require("express");
+const router = express.Router();
+const { User } = require("../models/userModel");
+const bcrypt = require("bcrypt");
+const userController = require("../controllers/userController");
+router.post("/register", userController.register);
+router.post("/login", userController.login);
+router.post("/sendRequest", userController.sendFriendRequest);
+router.post("/acceptRequest", userController.acceptFriendRequest);
+router.get("/getFriends/:userId", userController.getAllFriends);
+router.get("/changeStatus", userController.changeStatus);
+module.exports = router;
