@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
 class userController {
+  io = req.app.get("io");
   static register = (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -43,6 +44,7 @@ class userController {
   };
   static login = (req, res) => {
     const { email, password } = req.body;
+    console.log(email, password);
     if (!email || !password) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
@@ -59,9 +61,11 @@ class userController {
               process.env.JWT_SECRET,
               { expiresIn: "24h" }
             );
-            return res
-              .status(200)
-              .json({ message: "Login Successful", token: token });
+            return res.status(200).json({
+              message: "Login Successful",
+              token: token,
+              id: data._id,
+            });
           } else {
             return res.status(400).json({ message: "Invalid Password" });
           }
@@ -190,6 +194,22 @@ class userController {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
       });
+  };
+  static searchUser = (req, res) => {
+    const { email } = req.query;
+    console.log(email);
+    User.findOne({ email: email }, "username email -_id").then((data, err) => {
+      if (data) {
+        console.log(data);
+
+        return res.status(200).json({ message: "User Found", data: data });
+      } else {
+        return res.status(400).json({ message: "User Not Found" });
+      }
+      if (err) {
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+    });
   };
 }
 module.exports = userController;
