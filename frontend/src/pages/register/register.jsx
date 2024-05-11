@@ -11,11 +11,13 @@ import {
     Avatar,
     AvatarGroup,
     useBreakpointValue,
+
     Icon,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import Navbar from '../../components/navbar';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer,toast } from 'react-toastify';
+import Navbar from '../../components/navbar';
 const avatars = [
     {
         name: 'Ryan Florence',
@@ -40,11 +42,13 @@ const avatars = [
 ];
 
 export default function JoinOurTeam() {
-    const navigate=useNavigate();
-    const [email,setEmail] = useState('')
-    const [password,setPassword] = useState('')
-    const handleLogin = async () => {
-        console.log(email,password);
+    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const navigate = useNavigate();
+    const handleRegister = async () => {
+
+        console.log(username,email, password);
     }
     return (
         <>
@@ -60,7 +64,7 @@ export default function JoinOurTeam() {
                     <Heading
                         lineHeight={1.1}
                         fontSize={{ base: '3xl', sm: '4xl', md: '5xl', lg: '6xl' }}>
-                        Login{' '}
+                        Register{' '}
                         <Text
                             as={'span'}
                             bgGradient="linear(to-r, red.400,pink.400)"
@@ -94,7 +98,7 @@ export default function JoinOurTeam() {
                                 />
                             ))}
                         </AvatarGroup>
-                       
+
                         <Flex
                             align={'center'}
                             justify={'center'}
@@ -133,7 +137,7 @@ export default function JoinOurTeam() {
                             color={'gray.800'}
                             lineHeight={1.1}
                             fontSize={{ base: '2xl', sm: '3xl', md: '4xl' }}>
-                            Login!
+                            Register!
                             <Text
                                 as={'span'}
                                 bgGradient="linear(to-r, red.400,pink.400)"
@@ -141,10 +145,20 @@ export default function JoinOurTeam() {
                                 !
                             </Text>
                         </Heading>
-                       
+
                     </Stack>
                     <Box as={'form'} mt={10}>
                         <Stack spacing={4}>
+                            <Input
+                                placeholder="Username"
+                                bg={'gray.100'}
+                                border={0}
+                                color={'gray.500'}
+                                _placeholder={{
+                                    color: 'gray.500',
+                                }}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
                             <Input
                                 placeholder="Email"
                                 bg={'gray.100'}
@@ -166,12 +180,12 @@ export default function JoinOurTeam() {
                                 type={'password'}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            
+
                         </Stack>
                         <Button
-                        onClick={() => {
-                            handleLogin();
-                        }}
+                            onClick={() => {
+                                handleRegister();
+                            }}
                             fontFamily={'heading'}
                             mt={8}
                             w={'full'}
@@ -181,13 +195,14 @@ export default function JoinOurTeam() {
                                 bgGradient: 'linear(to-r, red.400,pink.400)',
                                 boxShadow: 'xl',
                             }}>
-                            Login
+                            Register
                         </Button>
                     </Box>
                     form
                 </Stack>
             </Container>
-           
+            
+            <ToastContainer/>
         </Box>
         </>
     );

@@ -29,14 +29,21 @@ class chatController {
         chat: chatId,
         sender: senderId,
         content: content,
-      }).then((data, err) => {
-        if (err) {
+      })
+        .then((data, err) => {
+          if (err) {
+            return res.status(500).json({ message: "Internal Server Error" });
+          }
+          if (data) {
+            return res
+              .status(200)
+              .json({ message: "Message Sent", data: data });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
           return res.status(500).json({ message: "Internal Server Error" });
-        }
-        if (data) {
-          return res.status(200).json({ message: "Message Sent", data: data });
-        }
-      });
+        });
     }
   };
   static getChat = (req, res) => {
@@ -56,6 +63,29 @@ class chatController {
               .status(200)
               .json({ message: "Chat Fetched", data: data });
           }
+        });
+    }
+  };
+  static getMessages = (req, res) => {
+    const { chatId } = req.params;
+    if (!chatId) {
+      return res.status(400).json({ message: "Please fill in all fields" });
+    } else {
+      MessageModel.find({ chat: chatId })
+        .populate("sender", "username email")
+        .then((data, err) => {
+          if (err) {
+            return res.status(500).json({ message: "Internal Server Error" });
+          }
+          if (data) {
+            return res
+              .status(200)
+              .json({ message: "Messages Fetched", data: data });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          return res.status(500).json({ message: "Internal Server Error" });
         });
     }
   };
