@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
     return new Promise((resolve) => {
       const timeout = Math.random() * (15000 - 5000) + 5000;
       setTimeout(() => {
-        resolve("This is a mock response from the LLM based on user input");
+        resolve("Yes i am busy right now (Generated from the api) ");
       }, timeout);
     });
   }
@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
     });
     console.log("Reply", reply);
     chatId.theirMessage.content =
-      "This is a mock response from the LLM based on user input";
+      "Yes i am busy right now (Generated from the api) ";
     chatId.theirMessage.sender = chatId.userId;
 
     chatId.theirMessage.chat.participants.forEach((user) => {
