@@ -9,6 +9,8 @@ const app = express();
 const server = createServer(app);
 const chatRoutes = require("./routes/chatRoutes");
 const chatController = require("./controllers/chatController");
+const { VertexAI } = require("@google-cloud/vertexai");
+const { Storage } = require("@google-cloud/storage");
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
   allowedHeaders: ["Content-Type"],
@@ -22,6 +24,7 @@ app.use(
   })
 );
 configDotenv();
+
 const port = process.env.PORT || 3000;
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -31,6 +34,7 @@ mongoose
   .catch((error) => {
     console.log(error);
   });
+
 io.on("connection", (socket) => {
   console.log(`A user connected,${socket.id}`);
   socket.on("setup", (userData) => {
@@ -51,16 +55,30 @@ io.on("connection", (socket) => {
     });
     socket.broadcast.emit("new message");
   });
+  async function getLLMResponse(prompt) {
+    return new Promise((resolve) => {
+      const timeout = Math.random() * (15000 - 5000) + 5000;
+      setTimeout(() => {
+        resolve("This is a mock response from the LLM based on user input");
+      }, timeout);
+    });
+  }
+  // Example usage
   socket.on("ai message", (chatId) => {
     console.log("Ai message Case", chatId.theirMessage);
-
-    chatId.theirMessage.content = "This is the ai response brother";
+    var reply;
+    getLLMResponse(chatId.theirMessage.content).then((reply2) => {
+      reply = reply2;
+    });
+    console.log("Reply", reply);
+    chatId.theirMessage.content =
+      "This is a mock response from the LLM based on user input";
     chatId.theirMessage.sender = chatId.userId;
-    // chatId.theirMessage.participants.forEach((user) => {
-    //   if (user._id == chatId.theirMessage.sender) return;
-    //   socket.in(user._id).emit("message received", chatId.theirMessage);
-    // });
-    // socket.broadcast.emit("new message");
+
+    chatId.theirMessage.chat.participants.forEach((user) => {
+      socket.in(user._id).emit("message received", chatId.theirMessage);
+    });
+    socket.broadcast.emit("new message");
   });
 });
 app.use(userRoutes);
