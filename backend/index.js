@@ -35,8 +35,32 @@ io.on("connection", (socket) => {
   console.log(`A user connected,${socket.id}`);
   socket.on("setup", (userData) => {
     socket.join(userData);
-    console.log("UserData", userData);
     socket.emit("connected");
+  });
+  socket.on("join chat", (room) => {
+    socket.join(room);
+    console.log("A user joined room", room);
+  });
+  socket.on("new message", (newMessage) => {
+    console.log("Sender is", newMessage.sender);
+    var chat = newMessage.chat;
+    console.log("Chat", chat.participants);
+    chat.participants.forEach((user) => {
+      if (user._id == newMessage.sender) return;
+      socket.in(user._id).emit("message received", newMessage);
+    });
+    socket.broadcast.emit("new message");
+  });
+  socket.on("ai message", (chatId) => {
+    console.log("Ai message Case", chatId.theirMessage);
+
+    chatId.theirMessage.content = "This is the ai response brother";
+    chatId.theirMessage.sender = chatId.userId;
+    // chatId.theirMessage.participants.forEach((user) => {
+    //   if (user._id == chatId.theirMessage.sender) return;
+    //   socket.in(user._id).emit("message received", chatId.theirMessage);
+    // });
+    // socket.broadcast.emit("new message");
   });
 });
 app.use(userRoutes);

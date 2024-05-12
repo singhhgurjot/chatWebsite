@@ -213,5 +213,16 @@ class userController {
       }
     });
   };
+  static getStatus = (req, res) => {
+    const userId = req.params.userId;
+    User.findById(userId).then((data, err) => {
+      if (data) {
+        return res.status(200).json({ status: data.status });
+      }
+      if (err) {
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+    });
+  };
 }
 module.exports = userController;

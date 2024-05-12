@@ -1,5 +1,9 @@
 import React,{useState} from 'react'
-import {Box, Tooltip,Button,Text,Avatar,Drawer,useDisclosure, DrawerOverlay,DrawerContent,DrawerHeader,DrawerBody, Input, Spinner}  from "@chakra-ui/react";
+import {
+  Box, Radio, Stack,RadioGroup, Tooltip,Button,Text,Avatar,Drawer,useDisclosure, DrawerOverlay,DrawerContent,DrawerHeader,DrawerBody, Input, Spinner,Menu,MenuButton,
+MenuList,MenuItem,Select
+}  from "@chakra-ui/react";
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import ChatLoading from '../chatLoading/chatLoading';
@@ -12,6 +16,7 @@ export default function sideBox() {
   const [loading,setLoading] = useState(false)
   const [loadingChat,setLoadingChat] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  
   // const {
   //   setSelectedChat,
   //   user,
@@ -20,7 +25,7 @@ export default function sideBox() {
   //   chats,
   //   setChats,
   // } = ChatState();
-  const {user,setSelectedChat,selectedChat,chats,setChats}=ChatState();
+  const {user,setSelectedChat,selectedChat,chats,setChats,status,setStatus}=ChatState();
   const handleSearch = async () => {
     setLoading(true);
     if(search.trim().length===0){
@@ -44,10 +49,12 @@ export default function sideBox() {
     console.log(userId);
     try{
 setLoadingChat(true);
+
 const {data}=await axios.post("http://localhost:2000/createChat",{senderId:user,receiverId:userId})
 console.log("Data is",data);
-      if (!chats.find((c) => c._id === data._id)) setChats([data.data, ...chats]);
-setSelectedChat(data);
+      if (!chats.find((c) => c._id === data._id)) 
+        setChats([data.data, ...chats]);
+          setSelectedChat(data);
 setLoadingChat(false);
 console.log(data);
 onClose();
@@ -56,9 +63,18 @@ onClose();
       toast.error(err.message);
     }
   }
+  const handleSelectChange = async (value) => {
+    setStatus(value);
+   
+        axios.post("http://localhost:2000/changeStatus", { status: value, userId: user }).then((res) => {
+      if(res.status==200){
+        toast.success(`Status changed to ${value}`);
+      }
+  });
+}
   return (
     <>
-    <Box display="flex" justifyContent="space-between" width="100%" >
+    <Box display="flex" justifyContent="space-between" width="100%" alignItems="center" >
       <Tooltip label="Search for users" hasArrow placement="bottom-end" >
 <Button variant="ghost" gap="10px" onClick={onOpen}>
           <i className="fas fa-search"></i>
@@ -69,9 +85,16 @@ onClose();
  ChatNow
         
   </Text>
+  <div style={{display:"flex" ,gap:"10px"}}>
       <Avatar size="sm" cursor="pointer" name="user" src="https://www.freeiconspng.com/thumbs/profile-icon-png/profile-icon-9.png">
-
   </Avatar>
+          <RadioGroup onChange={handleSelectChange} value={status}>
+            <Stack direction='row'>
+              <Radio value='available' isChecked={status=="available"}>Available</Radio>
+              <Radio value='busy' isChecked={status == "busy"}>Busy</Radio>
+            </Stack>
+          </RadioGroup>
+        </div>
     </Box>
     <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
       <DrawerOverlay></DrawerOverlay> 
@@ -92,6 +115,7 @@ onClose();
               }}></UserListItem>)
             }))}
             {loadingChat && <Spinner ml="auto" display="flex"></Spinner>}
+
           </DrawerBody>
       </DrawerContent>
       <ToastContainer/>

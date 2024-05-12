@@ -30,11 +30,16 @@ class chatController {
         sender: senderId,
         content: content,
       })
-        .then((data, err) => {
+        .then(async (data, err) => {
           if (err) {
             return res.status(500).json({ message: "Internal Server Error" });
           }
           if (data) {
+            // Populate the chat with participants
+            await ChatModel.populate(data, {
+              path: "chat",
+              populate: { path: "participants", model: "User" },
+            });
             return res
               .status(200)
               .json({ message: "Message Sent", data: data });
@@ -46,6 +51,7 @@ class chatController {
         });
     }
   };
+
   static getChat = (req, res) => {
     const { userId } = req.params;
     if (!userId) {

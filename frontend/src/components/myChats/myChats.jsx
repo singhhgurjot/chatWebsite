@@ -54,7 +54,7 @@ export default function chatBox() {
                     {chats?<Stack overflowY="scroll">
 {
     chats.map((chat)=>{
-        console.log("Chat is" , chat)
+        console.log("Chat is" , chat.participants[0]._id)
         return (
         <Box onClick={()=>{
             setSelectedChat(chat)
@@ -72,9 +72,7 @@ export default function chatBox() {
                     <div style={{display:"flex", gap:"10px", alignItems:"center"}}>
                 <i className="fa-solid fa-user" ></i>
                   <p>
-                    
-                   
-                    {chat.participants[0] == loggedInUser ? chat.participants[0].username : chat.participants[1].username}
+                    {chat.participants[0]._id == user ? chat.participants[1].username : chat.participants[0].username}
                     <br/>
                     
 

@@ -1,48 +1,80 @@
-    import React ,{useEffect, useState} from 'react'
+    import React ,{useEffect, useState,useRef} from 'react'
     import {Box,FormControl,Input,Button,Stack} from "@chakra-ui/react";
     import { ChatState } from '../../context/userContext';
     import axios from 'axios';
     import {toast,ToastContainer} from 'react-toastify';
     import io from 'socket.io-client';
+var socket;
     export default function singleChat() {
-        const {user,selectedChat,setSelectedChat}=ChatState();
+        const {user,selectedChat,setSelectedChat,status,setStatus}=ChatState();
         const [messages,setMessages]=useState([]);
         const [newMessage,setNewMessage]=useState("");
         const [loading,setLoading]=useState(false);
         const [socketConnected,setSocketConnected]=useState(false);
-        var socket,selectedChatComapre;
+        const chatBoxRef=useRef(null);
+        
+        var selectedChatCompare;
         useEffect(() => {
-
-            socket=io("http://localhost:2000");
+             socket = io("http://localhost:2000");
             socket.emit("setup",user);
             socket.on("connected",()=>{
                 setSocketConnected(true);
             })
-
         },[])
+        useEffect(() => {
+            fetchMessage();
+            selectedChatCompare = selectedChat;
+
+        }
+            , [selectedChat])
+        useEffect(() => {
+            socket.on("message received", (newMessage) => {
+                console.log("New Message is", newMessage);
+                if (!selectedChatCompare || selectedChatCompare._id != newMessage.chat._id) {
+                }
+                else {
+                    
+                    setMessages(prevMessages => [...prevMessages, newMessage]);
+                    
+                    axios.get("http://localhost:2000/getStatus/" + user).then((res) => {
+                        console.log("Status is", res.data.status);
+                        if(res.data.status=="busy"){
+                            socket.emit("ai message", { chatId: newMessage.chat._id, userId: user, sender: newMessage.sender, theirMessage: newMessage });
+                        }
+                    })
+
+                    
+                }
+            })
+        })
         const sendMessage=(e)=>{
+
                 axios.post("http://localhost:2000/sendMessage",{chatId:selectedChat._id,senderId:user,content:newMessage}).then((res)=>{
-                    console.log("Sender isss is",res.data.data.sender);
-                    console.log("Message[0]",messages[0]);
+                   
                     console.log("Stored[0]",res.data.data);
                     setMessages([...messages,res.data.data]);
                     setNewMessage("");
+                    socket.emit("new message",res.data.data);
+
                 }).catch(err=>{console.log(err)})
         }
     const typingHandler=(e)=>{
 
     }
-        useEffect(() => {
-            console.log("Selected Chat is ",selectedChat?._id);
-            if(selectedChat){
-            axios.get("http://localhost:2000/getMessages/"+selectedChat?._id).then((res)=>{
-                console.log("Response is",res);
-                setMessages(res.data.data);
-                console.log("Message is",res.data.data);
-        }).catch(err=>{console.log(err)})
-    }}
-        , [selectedChat])
-
+        
+        const fetchMessage=()=>{
+            console.log("useEffect called")
+            console.log("Selected Chat is ", selectedChat?._id);
+            if (selectedChat) {
+                axios.get("http://localhost:2000/getMessages/" + selectedChat?._id).then((res) => {
+            
+                    setMessages(res.data.data);
+                    console.log(selectedChat._id);
+                    socket.emit("join chat", selectedChat._id);
+                }).catch(err => { console.log(err) })
+        }
+    }
+    
         console.log(selectedChat);
     return (
         <>
@@ -78,10 +110,11 @@
                     height="100%"
                     borderRadius="lg"
                     overflowY="hidden"
+                    
                 >
-                    <Stack overflowY="scroll">
+                    <Stack overflowY="scroll" ref={chatBoxRef}>
                 {messages?.map((message)=>{
-                    console.log(message.sender);
+                    
                     return (<Box
                         key={message._id}
                         alignSelf={message.sender._id === user || message.sender===user ? "flex-end" : "flex-start"} 
@@ -94,7 +127,7 @@
                         
                     >
                         {message.content}
-                  
+
                     </Box>)
                     
                 })}
