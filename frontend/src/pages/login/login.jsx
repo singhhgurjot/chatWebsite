@@ -16,6 +16,9 @@ import {
 import { useState } from 'react';
 import Navbar from '../../components/navbar';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ToastContainer,toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const avatars = [
     {
         name: 'Ryan Florence',
@@ -44,7 +47,26 @@ export default function JoinOurTeam() {
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
     const handleLogin = async () => {
-        console.log(email,password);
+        axios.post("http://localhost:2000/login", { email, password }, {
+            validateStatus: function (status) {
+                return status >= 200 && status < 500;
+            }
+        }).then((res) => {
+            if (res.status == 200 && res.data.message =="Login Successful"){
+                toast.success("Login Successful");
+                localStorage.setItem("token",res.data.token);
+                localStorage.setItem("id",res.data.id);
+                setTimeout(() => {
+                    navigate("/chat")
+                },1000)
+            }
+            else{
+                toast.error(res.data.message);
+            }
+           
+        }).catch((err)=>{
+            toast.error(err.message);
+        })
     }
     return (
         <>
@@ -187,7 +209,7 @@ export default function JoinOurTeam() {
                     form
                 </Stack>
             </Container>
-           
+           <ToastContainer/>
         </Box>
         </>
     );

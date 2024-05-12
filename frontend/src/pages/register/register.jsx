@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer,toast } from 'react-toastify';
 import Navbar from '../../components/navbar';
+import axios from 'axios';
 const avatars = [
     {
         name: 'Ryan Florence',
@@ -49,6 +50,24 @@ export default function JoinOurTeam() {
     const handleRegister = async () => {
 
         console.log(username,email, password);
+        axios.post("http://localhost:2000/register", { username,email, password }, {
+            validateStatus: function (status) {
+                return status >= 200 && status < 500;
+            }
+        }).then((res)=>{
+            if (res.status == 200 && res.data.message =="Registered Successfully"){
+                toast.success("Registered Successfully");
+                setTimeout(() => {
+                    navigate("/login")
+                }, 1000);
+            }
+            else{
+                toast.error(res.data.message);
+            }
+        }).catch((err)=>{
+            toast.error(err.message);
+            
+        })
     }
     return (
         <>

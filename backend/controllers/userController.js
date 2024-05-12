@@ -67,10 +67,12 @@ class userController {
               id: data._id,
             });
           } else {
-            return res.status(400).json({ message: "Invalid Password" });
+            return res
+              .status(400)
+              .json({ message: "Invalid Email or Password" });
           }
         } else {
-          return res.status(400).json({ message: "Invalid Email" });
+          return res.status(400).json({ message: "Invalid Email or Password" });
         }
       });
     } catch (err) {
@@ -198,13 +200,13 @@ class userController {
   static searchUser = (req, res) => {
     const { email } = req.query;
     console.log(email);
-    User.findOne({ email: email }, "username email -_id").then((data, err) => {
+    User.find({ email: email }, "username email _id").then((data, err) => {
       if (data) {
         console.log(data);
 
         return res.status(200).json({ message: "User Found", data: data });
       } else {
-        return res.status(400).json({ message: "User Not Found" });
+        return res.status(404).json({ message: "User Not Found" });
       }
       if (err) {
         return res.status(500).json({ message: "Internal Server Error" });
