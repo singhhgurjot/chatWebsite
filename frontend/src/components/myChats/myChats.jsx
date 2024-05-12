@@ -57,18 +57,17 @@ export default function chatBox() {
         console.log("Chat is" , chat)
         return (
         <Box onClick={()=>{
-            setSelectedChat(chat._id)
-            
+            setSelectedChat(chat)
+                console.log("Hye",chat._id);
             }} 
             cursor="pointer"
                 
-            bg={selectedChat === chat._id ? "#f46573" : "#E8E8E8" }
-            color={selectedChat === chat._id ? "white" : "black" }
+            bg={selectedChat?._id=== chat._id ? "#f46573" : "#E8E8E8" }
+            color={selectedChat?._id=== chat._id ? "white" : "black" }
             px={3}
             py={2}
             borderRadius="lg"
             key={chat._id}
-                
                 >
                     <div style={{display:"flex", gap:"10px", alignItems:"center"}}>
                 <i className="fa-solid fa-user" ></i>

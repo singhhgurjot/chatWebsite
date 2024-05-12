@@ -31,18 +31,14 @@ mongoose
   .catch((error) => {
     console.log(error);
   });
-// io.on("connection", (socket) => {
-//   console.log(`A user connected,${socket.id}`);
-//   socket.on("sendMessage", (data) => {
-//     console.log(data);
-//     chatController.sendMessage(io);
-//   });
-//   socket.on("setup", (userData) => {
-//     socket.join(userData._id);
-//     console.log(userData._id);
-//     socket.emit("connected", socket.id);
-//   });
-// });
+io.on("connection", (socket) => {
+  console.log(`A user connected,${socket.id}`);
+  socket.on("setup", (userData) => {
+    socket.join(userData);
+    console.log("UserData", userData);
+    socket.emit("connected");
+  });
+});
 app.use(userRoutes);
 app.use(chatRoutes);
 

@@ -68,6 +68,7 @@ class chatController {
   };
   static getMessages = (req, res) => {
     const { chatId } = req.params;
+    console.log("ChatId is", chatId);
     if (!chatId) {
       return res.status(400).json({ message: "Please fill in all fields" });
     } else {
