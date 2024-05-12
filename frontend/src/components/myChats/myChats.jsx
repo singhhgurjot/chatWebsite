@@ -1,13 +1,13 @@
 import React, { useEffect,useState } from 'react'
 import { ChatState } from '../../context/userContext';
 import {Box,Stack} from "@chakra-ui/react";
-import axios from 'axios';
+import axios from '../../axios.js';
 import ChatLoading from '../chatLoading/chatLoading';
 export default function chatBox() {
     const [loggedInUser, setLoggedInUser] = useState({});   
     const { user,chats,setChats,selectedChat,setSelectedChat } = ChatState();
     const fetchChat=async()=>{
-        axios.get(`http://localhost:2000/getChat/${user}`).then(res=>{
+        axios().get(`http://localhost:2000/getChat/${user}`).then(res=>{
             console.log(res.data.data);
             setChats(res.data.data)
         }).catch(err=>{

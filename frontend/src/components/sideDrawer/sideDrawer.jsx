@@ -5,7 +5,7 @@ MenuList,MenuItem,Select
 }  from "@chakra-ui/react";
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { ToastContainer, toast } from 'react-toastify';
-import axios from 'axios';
+import axios from '../../axios.js';
 import ChatLoading from '../chatLoading/chatLoading';
 import UserListItem from '../userListItem/userListItem';
 import { ChatState } from '../../context/userContext';
@@ -31,7 +31,7 @@ export default function sideBox() {
     if(search.trim().length===0){
       toast.error("Please enter a valid email")
     }
-    const data=await axios.get(`http://localhost:2000/searchUser?email=${search}`, {
+    const data=await axios().get(`http://localhost:2000/searchUser?email=${search}`, {
       validateStatus: function (status) {
         return status >= 200 && status < 500;
       }
@@ -50,7 +50,7 @@ export default function sideBox() {
     try{
 setLoadingChat(true);
 
-const {data}=await axios.post("http://localhost:2000/createChat",{senderId:user,receiverId:userId})
+const {data}=await axios().post("http://localhost:2000/createChat",{senderId:user,receiverId:userId})
 console.log("Data is",data);
       if (!chats.find((c) => c._id === data._id)) 
         setChats([data.data, ...chats]);
@@ -66,7 +66,7 @@ onClose();
   const handleSelectChange = async (value) => {
     setStatus(value);
    
-        axios.post("http://localhost:2000/changeStatus", { status: value, userId: user }).then((res) => {
+        axios().post("http://localhost:2000/changeStatus", { status: value, userId: user }).then((res) => {
       if(res.status==200){
         toast.success(`Status changed to ${value}`);
       }

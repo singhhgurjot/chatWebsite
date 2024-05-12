@@ -12,8 +12,6 @@ const ChatSchema = mongoose.Schema({
   lastMessage: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
 });
 
-// Create the models
-
 const ChatModel = mongoose.model("Chat", ChatSchema);
 
 module.exports = ChatModel;

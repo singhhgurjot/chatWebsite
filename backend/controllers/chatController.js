@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const MessageModel = require("../models/messageModel.js");
 const ChatModel = require("../models/chatModel.js");
+
 class chatController {
   static createChat = (req, res) => {
     const { senderId, receiverId } = req.body;
@@ -35,7 +36,6 @@ class chatController {
             return res.status(500).json({ message: "Internal Server Error" });
           }
           if (data) {
-            // Populate the chat with participants
             await ChatModel.populate(data, {
               path: "chat",
               populate: { path: "participants", model: "User" },

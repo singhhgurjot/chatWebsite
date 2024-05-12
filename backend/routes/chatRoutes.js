@@ -5,9 +5,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 const { Storage } = require("@google-cloud/storage");
 const { json } = require("express/lib/response");
-
-router.post("/createChat", chatController.createChat);
-router.post("/sendMessage", chatController.sendMessage);
-router.get("/getChat/:userId", chatController.getChat);
-router.get("/getMessages/:chatId", chatController.getMessages);
+const checkAuth = require("../middlewares/checkAuth");
+router.post("/createChat", checkAuth, chatController.createChat);
+router.post("/sendMessage", checkAuth, chatController.sendMessage);
+router.get("/getChat/:userId", checkAuth, chatController.getChat);
+router.get("/getMessages/:chatId", checkAuth, chatController.getMessages);
 module.exports = router;

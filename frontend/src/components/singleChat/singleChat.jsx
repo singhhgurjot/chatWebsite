@@ -1,7 +1,7 @@
     import React ,{useEffect, useState,useRef} from 'react'
     import {Box,FormControl,Input,Button,Stack} from "@chakra-ui/react";
     import { ChatState } from '../../context/userContext';
-    import axios from 'axios';
+    import axios from '../../axios.js';
     import {toast,ToastContainer} from 'react-toastify';
     import io from 'socket.io-client';
 var socket;
@@ -36,7 +36,7 @@ var socket;
                     
                     setMessages(prevMessages => [...prevMessages, newMessage]);
                     
-                    axios.get("http://localhost:2000/getStatus/" + user).then((res) => {
+                    axios().get("http://localhost:2000/getStatus/" + user).then((res) => {
                         console.log("Status is", res.data.status);
                         if(res.data.status=="busy"){
                             socket.emit("ai message", { chatId: newMessage.chat._id, userId: user, sender: newMessage.sender, theirMessage: newMessage });
@@ -49,7 +49,7 @@ var socket;
         })
         const sendMessage=(e)=>{
 
-                axios.post("http://localhost:2000/sendMessage",{chatId:selectedChat._id,senderId:user,content:newMessage}).then((res)=>{
+                axios().post("http://localhost:2000/sendMessage",{chatId:selectedChat._id,senderId:user,content:newMessage}).then((res)=>{
                    
                     console.log("Stored[0]",res.data.data);
                     setMessages([...messages,res.data.data]);
@@ -66,7 +66,7 @@ var socket;
             console.log("useEffect called")
             console.log("Selected Chat is ", selectedChat?._id);
             if (selectedChat) {
-                axios.get("http://localhost:2000/getMessages/" + selectedChat?._id).then((res) => {
+                axios().get("http://localhost:2000/getMessages/" + selectedChat?._id).then((res) => {
             
                     setMessages(res.data.data);
                     console.log(selectedChat._id);

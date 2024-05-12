@@ -175,11 +175,11 @@ class userController {
       });
   };
   static changeStatus = (req, res) => {
-    const { userId, status } = req.body;
-    if (!userId || !status) {
+    const { user, status } = req.body;
+    if (!user || !status) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
-    User.findByIdAndUpdate(userId, { status: status })
+    User.findByIdAndUpdate(user, { status: status })
       .then((data, err) => {
         if (data) {
           console.log(data);
